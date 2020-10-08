@@ -194,11 +194,20 @@ func RequestCallStart(ctx context.Context, config *config.Config, db *sqlx.DB, o
 	callChannel := ca.GetForURN(urn, assets.ChannelRoleCall)
 	if callChannel == nil {
 		// can't start call, no channel that can call
+		logrus.WithFields(logrus.Fields{
+			"contact_id": contact.ID(),
+			"contact_urn": urn.URN(),
+		}).Info("can't start call, no channel that can call")
 		return nil, nil
 	}
 
 	hasCall := callChannel.HasRole(assets.ChannelRoleCall)
 	if !hasCall {
+		logrus.WithFields(logrus.Fields{
+			"contact_id": contact.ID(),
+			"contact_urn": urn.URN(),
+			"channel": callChannel.Channel.Name(),
+		}).Info("can't start call, no channel with the call role")
 		return nil, nil
 	}
 
